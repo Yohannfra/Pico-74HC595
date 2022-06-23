@@ -1,82 +1,54 @@
 /*
-74HC595 test code. Tests QA, QB, QC, QD, QE, QF, QG and QH outs with custom library written by Mücahit KURTLAR.
+
+Pinouts:
     ___   ___
 QB  |  |_|  |   VCC
-QC  |       |   QA
-QD  |       |   SER
-QE  |       |   OE
-QF  |       |   RCLK
-QG  |       |   SRCLK
-QH  |       |   SRCLR
-GND |       |   QH'
+QC  |   7   |   QA
+QD  |   5   |   SER
+QE  |   H   |   OE
+QF  |   C   |   RCLK
+QG  |   9   |   SRCLK
+QH  |   5   |   SRCLR
+GND |   A   |   QH'
     ---------
 
 
 74HC595     pico
 -------     ----
 VCC         3.3V
-SER         GP12
+SER         GPIO 12
 OE          GND
-RCLK        GP10
-SRCLK       GP11
+RCLK        GPIO 10
+SRCLK       GPIO 11
 CRCLR       3.3V
-
-
-author: Mücahit KURTLAR
 */
 
+#include "../../src/74HC595.h"
 #include "pico/stdlib.h"
-#include "../../src/shift_register.h"
 
-int main() {
-    int latch_pin = 10;
-    int clk_pin = 11;
-    int data_pin = 12;
+int main()
+{
+    SR_74HC595_t sr = {
+        .clk_pin = 11,
+        .data_pin = 12,
+        .latch_pin = 10,
+        .pins = 0,
+        .nb_chained = 1, // you can link as many as you want, just increment this variable
+    };
 
-    gpio_init(latch_pin);
-    gpio_set_dir(latch_pin, GPIO_OUT);
-    gpio_init(clk_pin);
-    gpio_set_dir(clk_pin, GPIO_OUT);
-    gpio_init(data_pin);
-    gpio_set_dir(data_pin, GPIO_OUT);
+    SR_74HC595_init(&sr);
 
-    shreg *myreg = new_shreg(clk_pin, data_pin, latch_pin);
-    
     while (1) {
+        // turn all of them on one by one
+        for (int i = 0; i < 8 * sr.nb_chained; i++) {
+            SR_74HC595_put(&sr, 1 << i, 1);
+            sleep_ms(500);
+        }
 
-        shreg_put(myreg, QA, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QB, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QC, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QD, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QE, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QF, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QG, 1);
-        sleep_ms(500);
-        shreg_put(myreg, QH, 1);
-        sleep_ms(500);
-        
-        shreg_put(myreg, QA, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QB, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QC, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QD, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QE, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QF, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QG, 0);
-        sleep_ms(500);
-        shreg_put(myreg, QH, 0);
-        sleep_ms(500);
-
+        // turn all of them off one by one
+        for (int i = 0; i < 8 * sr.nb_chained; i++) {
+            SR_74HC595_put(&sr, 1 << i, 0);
+            sleep_ms(500);
+        }
     }
 }
