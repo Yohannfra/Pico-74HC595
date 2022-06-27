@@ -12,7 +12,6 @@ set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
 
 add_executable(${PROJECT_NAME}
     main.c
-    ../../src/74HC595.c
     )
 
 #pull in our pico_stdib which pulls common

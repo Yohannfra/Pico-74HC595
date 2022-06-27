@@ -1,40 +1,28 @@
-/*
-
-Pinouts:
-    ___   ___
-QB  |  |_|  |   VCC
-QC  |   7   |   QA
-QD  |   5   |   SER
-QE  |   H   |   OE
-QF  |   C   |   RCLK
-QG  |   9   |   SRCLK
-QH  |   5   |   SRCLR
-GND |   A   |   QH'
-    ---------
-
-
-74HC595     pico
--------     ----
-VCC         3.3V
-SER         GPIO 12
-OE          GND
-RCLK        GPIO 10
-SRCLK       GPIO 11
-CRCLR       3.3V
-*/
-
-#include "../../src/74HC595.h"
+#include "../../include/74HC595.h"
 #include "pico/stdlib.h"
+
+#define CLK_PIN 11
+#define DATA_PIN 12
+#define LATCH_PIN 10
 
 int main()
 {
     SR_74HC595_t sr = {
-        .clk_pin = 11,
-        .data_pin = 12,
-        .latch_pin = 10,
+        .clk_pin = CLK_PIN,
+        .data_pin = DATA_PIN,
+        .latch_pin = LATCH_PIN,
         .pins = 0,
         .nb_chained = 1, // you can link as many as you want, just increment this variable
+         .fn_gpio_put = &gpio_put,
+         .fn_sleep_us = &sleep_us,
     };
+
+    gpio_init(sr.latch_pin);
+    gpio_set_dir(sr.latch_pin, GPIO_OUT);
+    gpio_init(sr.clk_pin);
+    gpio_set_dir(sr.clk_pin, GPIO_OUT);
+    gpio_init(sr.data_pin);
+    gpio_set_dir(sr.data_pin, GPIO_OUT);
 
     SR_74HC595_init(&sr);
 

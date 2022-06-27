@@ -1,5 +1,9 @@
 # Pico-74HC595
 
-Shift register 74HC595 library for Raspberry Pi Pico and other RP2040 boards.
+74HC595 header only driver library.
 
-Forked and modified from https://github.com/mucahitkurtlar/Pico-74HC595.
+This library works with function pointers to make it hardware agnostic.
+
+See [examples](./examples) to see examples for ESP32, Arduino and RP2040 (Pi Pico).
+
+Forked and heavily modified from https://github.com/mucahitkurtlar/Pico-74HC595.
