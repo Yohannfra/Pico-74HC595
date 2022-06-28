@@ -1,4 +1,4 @@
-# Pico-74HC595
+# lib-74HC595
 
 74HC595 header only driver library.
 
